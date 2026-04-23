@@ -28,6 +28,9 @@ final class Widget extends Component
 
     public function render(): Renderable
     {
-        return view('reqdesk::widget-script');
+        /** @var view-string $view */
+        $view = 'reqdesk::widget-script';
+
+        return view($view);
     }
 }

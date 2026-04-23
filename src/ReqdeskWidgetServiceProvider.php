@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Reqdesk\Filament;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Reqdesk\Filament\Console\Commands\DoctorCommand;
 use Reqdesk\Filament\Contracts\WidgetUserResolver;
+use Reqdesk\Filament\Exceptions\ReqdeskConfigurationException;
 use Reqdesk\Filament\Services\ConfigValidator;
 use Reqdesk\Filament\Services\IdentitySigner;
 use Reqdesk\Filament\Services\ReqdeskClient;
@@ -24,7 +26,7 @@ final class ReqdeskWidgetServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package
-            ->name(static::$name)
+            ->name(self::$name)
             ->hasConfigFile()
             ->hasTranslations()
             ->hasViews('reqdesk')
@@ -33,11 +35,11 @@ final class ReqdeskWidgetServiceProvider extends PackageServiceProvider
             ->hasCommand(DoctorCommand::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command
-                    ->publishConfig()
+                    ->publishConfigFile()
                     ->publishMigrations()
                     ->askToRunMigrations()
                     ->endWith(function (InstallCommand $cmd): void {
-                        $requireSigning = ! (bool) env('REQDESK_INSTALL_SKIP_SIGNING', false);
+                        $requireSigning = ! (bool) config('reqdesk-widget.install_skip_signing', false);
                         $report = app(ConfigValidator::class)->validateEnvironment(
                             requireSigningSecret: $requireSigning,
                         );
@@ -96,7 +98,7 @@ final class ReqdeskWidgetServiceProvider extends PackageServiceProvider
             $report = app(ConfigValidator::class)->validateEnvironment();
 
             if ($report->errors !== []) {
-                throw new \Reqdesk\Filament\Exceptions\ReqdeskConfigurationException(
+                throw new ReqdeskConfigurationException(
                     'Reqdesk widget strict-mode validation failed: '.implode(' | ', $report->errors),
                 );
             }
@@ -104,7 +106,7 @@ final class ReqdeskWidgetServiceProvider extends PackageServiceProvider
     }
 
     /**
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @param  Application  $app
      */
     private function resolveResolverClass($app): string
     {

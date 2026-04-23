@@ -25,7 +25,7 @@ final class ReqdeskWidgetPlugin implements Plugin
 
     public static function make(): static
     {
-        return app(static::class);
+        return app(self::class);
     }
 
     public static function get(): static
@@ -65,7 +65,7 @@ final class ReqdeskWidgetPlugin implements Plugin
      */
     public function onlyPanels(array $panels): static
     {
-        $this->panels = array_values($panels);
+        $this->panels = $panels;
 
         return $this;
     }

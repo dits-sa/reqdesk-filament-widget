@@ -4,7 +4,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/dits-sa/reqdesk-filament-widget.svg?style=flat-square)](https://packagist.org/packages/dits-sa/reqdesk-filament-widget)
 [![License](https://img.shields.io/packagist/l/dits-sa/reqdesk-filament-widget.svg?style=flat-square)](LICENSE.md)
 
-Drop the Reqdesk support widget into any Filament v4 panel, configure every option from a native settings page, and HMAC-sign authenticated Laravel users so they never see a second login.
+Drop the Reqdesk support widget into any Filament v4 or v5 panel, configure every option from a native settings page, and HMAC-sign authenticated Laravel users so they never see a second login.
 
 ```php
 use Reqdesk\Filament\ReqdeskWidgetPlugin;
@@ -53,9 +53,12 @@ Laravel teams running Filament already have the information Reqdesk needs in ord
 | Package | Version |
 |---------|---------|
 | PHP | 8.2, 8.3, 8.4 |
-| Laravel | 11.x, 12.x |
-| Filament | 4.x |
+| Laravel | 11.28+, 12.x |
+| Filament | 4.x or 5.x |
 | spatie/laravel-settings | 3.4+ |
+
+Laravel 11.0 – 11.27 is supported only on the Filament 4.x lane; Filament 5
+requires Laravel 11.28+.
 
 ## Installation at a glance
 

@@ -26,14 +26,26 @@ When we ship a breaking change:
 2. The previous major stays supported for security fixes for six months after the new major's GA.
 3. We write a `UPGRADING-<previous>-to-<current>.md` in the repo root for complex transitions.
 
-## From 0.x to 1.0 (placeholder)
+## From 1.0 to 1.1 — Filament v5 support
 
-*No 1.0 release yet. This section will be filled in when we cut it.*
+`1.1.0` adds support for Filament v5 alongside the existing v4 support. No
+code changes are required on the host-app side; the widening is in
+`composer.json`.
 
-Things likely to move at 1.0:
+If your host app is still on Filament v4 and Laravel 11.28+:
 
-- The `user_resolver` settings field may become a typed enum of "built-in resolvers" with a separate overflow field for custom FQCNs.
-- Auth modes may switch from comma-separated strings to native enum arrays on the config file (settings page is already enum-backed).
-- The render hook may move to a named constant exported by the plugin to guarantee parity across Filament versions.
+```bash
+composer require dits-sa/reqdesk-filament-widget:^1.1
+```
 
-Nothing listed above is committed to — it is planning context only.
+If you are upgrading the host app from Filament v4 to v5, bump both in one
+step:
+
+```bash
+composer require dits-sa/reqdesk-filament-widget:^1.1 filament/filament:^5.0 -W
+php artisan reqdesk-widget:doctor
+```
+
+**One caveat:** `1.1.0` raises the minimum `illuminate/contracts` to
+`^11.28`, mirroring Filament v5's own Laravel floor. If your app is on
+Laravel 11.0 – 11.27, stay on `1.0.x` or upgrade Laravel first.

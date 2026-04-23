@@ -94,6 +94,7 @@ return [
     'panels' => array_values(array_filter(explode(',', (string) env('REQDESK_PANELS', '')))),
     'script_url' => env('REQDESK_SCRIPT_URL'),
     'strict' => (bool) env('REQDESK_STRICT', false),
+    'install_skip_signing' => (bool) env('REQDESK_INSTALL_SKIP_SIGNING', false),
 
     /*
     |--------------------------------------------------------------------------

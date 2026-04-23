@@ -38,15 +38,8 @@ final class DefaultUserResolver implements WidgetUserResolver
 
     private function extract(Authenticatable $user, string $key): string
     {
-        $value = null;
-
-        if (method_exists($user, 'getAttribute')) {
-            $value = $user->getAttribute($key);
-        }
-
-        if ($value === null && isset($user->{$key})) {
-            $value = $user->{$key};
-        }
+        /** @var mixed $value */
+        $value = $user->{$key} ?? null;
 
         return trim((string) ($value ?? ''));
     }

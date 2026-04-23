@@ -27,7 +27,7 @@ class ReqdeskSettings extends Page
 {
     protected string $view = 'reqdesk::filament.pages.settings';
 
-    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-lifebuoy';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-lifebuoy';
 
     /** @var array<string, mixed> | null */
     public ?array $data = [];

@@ -61,7 +61,7 @@ final class WidgetConfigBuilder
             'hideFab' => $this->settings->hide_fab,
             'hideDisplayModePicker' => $this->settings->hide_display_mode_picker,
             'fabIcon' => $this->settings->fab_icon,
-            'authMode' => array_values($authMode),
+            'authMode' => $authMode,
             'defaultCategory' => $this->settings->default_category,
             'translations' => $this->settings->translations !== [] ? $this->settings->translations : null,
             'actions' => $this->buildActions(),
@@ -80,7 +80,7 @@ final class WidgetConfigBuilder
             } catch (Throwable $exception) {
                 report($exception);
                 $canSign = false;
-                $init['authMode'] = array_values($this->settings->auth_mode_when_anonymous);
+                $init['authMode'] = $this->settings->auth_mode_when_anonymous;
             }
         }
 
@@ -117,7 +117,7 @@ final class WidgetConfigBuilder
     {
         $class = $this->settings->user_resolver;
 
-        if (! is_string($class) || $class === '') {
+        if ($class === '') {
             $class = (string) config('reqdesk-widget.user_resolver', DefaultUserResolver::class);
         }
 
@@ -182,9 +182,9 @@ final class WidgetConfigBuilder
         $result = [];
 
         foreach ($this->settings->actions as $action) {
-            $id = $action['id'] ?? null;
-            $labelEn = $action['label_en'] ?? null;
-            if (! is_string($id) || $id === '' || ! is_string($labelEn) || $labelEn === '') {
+            $id = $action['id'];
+            $labelEn = $action['label_en'];
+            if ($id === '' || $labelEn === '') {
                 continue;
             }
 
@@ -251,7 +251,7 @@ final class WidgetConfigBuilder
         );
     }
 
-    private function identifyEndpoint(): ?string
+    private function identifyEndpoint(): string
     {
         try {
             return route('reqdesk.widget.identify');

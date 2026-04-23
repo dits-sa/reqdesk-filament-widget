@@ -17,7 +17,7 @@ it('returns 401 when the caller is not authenticated', function (): void {
 });
 
 it('returns 503 when no signing secret is configured', function (): void {
-    $user = new TestUser();
+    $user = new TestUser;
 
     $this->actingAs($user)
         ->getJson('/reqdesk/widget/identity')

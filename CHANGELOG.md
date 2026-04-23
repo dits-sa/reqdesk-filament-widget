@@ -19,6 +19,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.1.0] - 2026-04-23
+
+### Added
+
+- Filament v5 support. The plugin now resolves and runs on host apps using
+  `filament/filament:^5.0` in addition to the existing v4 support. Every
+  Filament API the plugin uses (`Plugin` contract, `Panel`, render hooks,
+  `Schema` / `Schemas\Components\*`, `Forms\Components\*`) is source-
+  compatible between v4 and v5.
+- CI matrix now exercises PHP 8.2 / 8.3 / 8.4 × Laravel 11 / 12 × Filament
+  4 / 5 (excluding the Laravel 11 × Filament 5 combination, which is
+  prevented by Filament's own Laravel 11.28+ floor).
+- New `reqdesk-widget.install_skip_signing` config key (reads
+  `REQDESK_INSTALL_SKIP_SIGNING`) so the install-time signing-secret bypass
+  survives `config:cache`.
+
+### Changed
+
+- Minimum `illuminate/contracts` raised to `^11.28` to match Filament v5's
+  Laravel floor. Consumers on Laravel 11.27 or earlier stay on the
+  Filament v4 lane.
+- `DefaultUserResolver` now reads user attributes via property access only
+  (Eloquent's `__get` still routes through `getAttribute()`). Removes the
+  redundant `method_exists()` probe that PHPStan level 8 flagged as always
+  true on `Authenticatable`.
+- Install-command method updated from the deprecated `publishConfig()` to
+  `publishConfigFile()`, matching `spatie/laravel-package-tools` 1.16+.
+
+### Fixed
+
+- `phpstan.neon` no longer references the removed
+  `checkMissingIterableValueType` parameter (incompatible with PHPStan 2+).
+  All 14 pre-existing level-8 findings that the broken config was hiding
+  are now resolved.
+
 ## [1.0.0] - 2026-04-23
 
 ### Changed

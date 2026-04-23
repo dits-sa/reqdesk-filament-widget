@@ -6,6 +6,4 @@ namespace Reqdesk\Filament\Exceptions;
 
 use RuntimeException;
 
-final class ReqdeskConfigurationException extends RuntimeException
-{
-}
+final class ReqdeskConfigurationException extends RuntimeException {}

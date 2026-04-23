@@ -60,7 +60,7 @@ it('injects a signed customer payload when a user is authenticated', function ()
 });
 
 it('falls back to anonymous modes when signing secret is missing', function (): void {
-    $user = new TestUser();
+    $user = new TestUser;
 
     $result = app(WidgetConfigBuilder::class)->build($user);
 
