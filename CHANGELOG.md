@@ -19,6 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.0.0] - 2026-04-23
+
+### Changed
+
+- First stable release. The public surface (plugin class, settings fields,
+  resolver contract, HMAC signing contract, install/doctor commands) is now
+  covered by Semantic Versioning — breaking changes will require a major
+  version bump. No functional changes from `0.1.0`.
+
 ## [0.1.0] - 2026-04-23
 
 ### Added
