@@ -1,0 +1,50 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: echo "number=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          awk -v ver="## [${{ steps.version.outputs.number }}]" '
+            index($0, ver) { capture = 1; next }
+            capture && /^## \[/ { exit }
+            capture { print }
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "Release notes for ${{ steps.version.outputs.number }} are empty." >&2
+            exit 1
+          fi
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file release-notes.md
+
+      - name: Notify Packagist
+        if: env.PACKAGIST_TOKEN != ''
+        env:
+          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
+          PACKAGIST_USER: ${{ secrets.PACKAGIST_USER }}
+        run: |
+          curl -sSf -XPOST \
+            -H 'content-type:application/json' \
+            "https://packagist.org/api/update-package?username=${PACKAGIST_USER}&apiToken=${PACKAGIST_TOKEN}" \
+            -d '{"repository":{"url":"https://packagist.org/packages/dits-sa/reqdesk-filament-widget"}}'
