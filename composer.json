@@ -1,0 +1,78 @@
+{
+    "name": "dits-sa/reqdesk-filament-widget",
+    "description": "Production-ready Filament v4 plugin for the Reqdesk support widget — inject, configure and HMAC-sign the widget from inside your Filament panel.",
+    "keywords": [
+        "reqdesk",
+        "filament",
+        "filament-plugin",
+        "laravel",
+        "support",
+        "helpdesk",
+        "widget"
+    ],
+    "homepage": "https://github.com/dits-sa/reqdesk-filament-widget",
+    "support": {
+        "issues": "https://github.com/dits-sa/reqdesk-filament-widget/issues",
+        "source": "https://github.com/dits-sa/reqdesk-filament-widget"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Reqdesk",
+            "homepage": "https://reqdesk.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^4.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "illuminate/contracts": "^11.0|^12.0",
+        "spatie/laravel-package-tools": "^1.16",
+        "spatie/laravel-settings": "^3.4"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.17",
+        "orchestra/testbench": "^9.0|^10.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Reqdesk\\Filament\\": "src/",
+            "Reqdesk\\Filament\\Database\\Migrations\\": "database/migrations/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Reqdesk\\Filament\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test:coverage": "vendor/bin/pest --coverage --min=85",
+        "lint": "vendor/bin/pint",
+        "lint:check": "vendor/bin/pint --test",
+        "stan": "vendor/bin/phpstan analyse --memory-limit=2G",
+        "qa": [
+            "@lint:check",
+            "@stan",
+            "@test"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Reqdesk\\Filament\\ReqdeskWidgetServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

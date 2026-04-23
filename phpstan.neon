@@ -1,0 +1,11 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 8
+    paths:
+        - src
+    tmpDir: build/phpstan
+    checkMissingIterableValueType: false
+    ignoreErrors:
+        - '#Call to an undefined static method Filament\\Facades\\Filament::#'

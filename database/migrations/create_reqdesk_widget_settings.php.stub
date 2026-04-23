@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+use Spatie\LaravelSettings\Migrations\SettingsMigration;
+
+return new class extends SettingsMigration
+{
+    public function up(): void
+    {
+        $this->migrator->add('reqdesk_widget.api_key', null);
+        $this->migrator->add('reqdesk_widget.api_url', null);
+        $this->migrator->add('reqdesk_widget.signing_secret', null);
+        $this->migrator->add('reqdesk_widget.project_id', null);
+
+        $this->migrator->add('reqdesk_widget.theme_primary_color', '#0F5E56');
+        $this->migrator->add('reqdesk_widget.theme_mode', 'auto');
+        $this->migrator->add('reqdesk_widget.theme_border_radius', '6px');
+        $this->migrator->add('reqdesk_widget.theme_font_family', null);
+        $this->migrator->add('reqdesk_widget.theme_z_index', 9999);
+        $this->migrator->add('reqdesk_widget.theme_logo', null);
+        $this->migrator->add('reqdesk_widget.theme_brand_name', null);
+        $this->migrator->add('reqdesk_widget.theme_hide_branding', false);
+
+        $this->migrator->add('reqdesk_widget.position', 'bottom-end');
+        $this->migrator->add('reqdesk_widget.display_mode', 'popover');
+        $this->migrator->add('reqdesk_widget.display_side', 'end');
+        $this->migrator->add('reqdesk_widget.display_width', '420px');
+        $this->migrator->add('reqdesk_widget.display_height', '55vh');
+        $this->migrator->add('reqdesk_widget.display_dismiss_on_backdrop', true);
+        $this->migrator->add('reqdesk_widget.hide_fab', false);
+        $this->migrator->add('reqdesk_widget.hide_display_mode_picker', false);
+        $this->migrator->add('reqdesk_widget.fab_icon', 'help');
+
+        $this->migrator->add('reqdesk_widget.default_language', 'en');
+        $this->migrator->add('reqdesk_widget.widget_mode', 'ticket-form');
+        $this->migrator->add('reqdesk_widget.default_category', null);
+        $this->migrator->add('reqdesk_widget.translations', []);
+
+        $this->migrator->add('reqdesk_widget.auth_mode_when_signed', ['signed']);
+        $this->migrator->add('reqdesk_widget.auth_mode_when_anonymous', ['email']);
+        $this->migrator->add(
+            'reqdesk_widget.user_resolver',
+            \Reqdesk\Filament\Support\DefaultUserResolver::class,
+        );
+
+        $this->migrator->add('reqdesk_widget.actions', []);
+
+        $this->migrator->add('reqdesk_widget.enabled', true);
+        $this->migrator->add('reqdesk_widget.inject_for_guests', false);
+        $this->migrator->add('reqdesk_widget.panels', []);
+        $this->migrator->add('reqdesk_widget.script_url', null);
+    }
+};
