@@ -116,10 +116,14 @@ return [
     | CDN / self-hosted widget version pin
     |--------------------------------------------------------------------------
     |
-    | Pinned default. Override via REQDESK_SCRIPT_URL when self-hosting or
-    | pinning a different widget version.
+    | Pinned default, served from the Reqdesk-owned CDN
+    | (cdn.reqdesk.mod-sol-sa.com). Hosted on Dokploy behind Traefik +
+    | Let's Encrypt — see docs/guides/cdn-dokploy.md in the main Reqdesk
+    | repo. Override via REQDESK_SCRIPT_URL when pinning a specific
+    | version, hosting the widget yourself, or testing a pre-release
+    | build.
     |
     */
 
-    'script_url_default' => 'https://unpkg.com/@reqdesk/widget@1.2.20/dist/index.iife.js',
+    'script_url_default' => 'https://cdn.reqdesk.mod-sol-sa.com/widget/1.2.20/index.iife.js',
 ];

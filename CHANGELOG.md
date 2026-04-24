@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.3.3] - 2026-04-25
+
+### Changed
+
+- **`script_url_default` now points at the Reqdesk-owned CDN** (`https://cdn.reqdesk.mod-sol-sa.com/widget/1.2.20/index.iife.js`) instead of `unpkg.com`. Consumers on the default start loading the widget from infrastructure Reqdesk controls end-to-end — no more executable JavaScript from a third-party origin in authenticated admin sessions. The explicit override chain (`REQDESK_SCRIPT_URL` env → `reqdesk-widget.script_url` config → `ReqdeskWidgetSettings::$script_url`) is unchanged, so anyone pinning a version or self-hosting the bundle is unaffected. See `docs/guides/cdn-dokploy.md` in the main Reqdesk repo for the CDN architecture + deployment runbook.
+
 ## [1.3.2] - 2026-04-24
 
 ### Fixed
