@@ -7,6 +7,7 @@ namespace Reqdesk\Filament;
 use BackedEnum;
 use Closure;
 use Filament\Contracts\Plugin;
+use Filament\Facades\Filament;
 use Filament\Panel;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
@@ -139,14 +140,30 @@ final class ReqdeskWidgetPlugin implements Plugin
 
     public function boot(Panel $panel): void
     {
-        if (! $this->shouldInject($panel)) {
-            return;
-        }
+        $panelId = $panel->getId();
 
+        // Register in the global scope bucket, not scoped to a panel id or
+        // class. Filament's BasePage::getRenderHookScopes() only passes the
+        // active page's own class (see BasePage.php in filament/filament),
+        // so any scope we register under — panel id or `Filament\Panel`
+        // class — is never consulted and the hook silently never fires.
+        // Global-bucket hooks DO run on every render, so we gate inside
+        // the closure using the panel Filament resolves at render time.
         FilamentView::registerRenderHook(
             $this->renderHook ?? PanelsRenderHook::BODY_END,
-            fn (): string => Blade::render('<x-reqdesk::widget />'),
-            scopes: $panel->getId(),
+            function () use ($panelId): string {
+                $current = Filament::getCurrentOrDefaultPanel();
+
+                if ($current === null || $current->getId() !== $panelId) {
+                    return '';
+                }
+
+                if (! $this->shouldInject($current)) {
+                    return '';
+                }
+
+                return Blade::render('<x-reqdesk::widget />');
+            },
         );
     }
 

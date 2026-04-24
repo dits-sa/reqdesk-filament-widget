@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.3.2] - 2026-04-24
+
+### Fixed
+
+- **Widget render hook now actually fires.** v1.2.0 changed the render-hook registration from `scopes: $panel::class` to `scopes: $panel->getId()` to stop cross-panel leakage. That stopped the leak — but it also silenced the hook entirely. Filament's `BasePage::getRenderHookScopes()` only passes the active page's own class (e.g. `App\Filament\Pages\Dashboard::class`) when matching render hooks. Neither `\Filament\Panel` (v1.1.0 behaviour) nor `'admin'` (v1.2.0 behaviour) is ever in that scope array, so the hook bucket was orphaned and the widget never rendered on any page. The widget is now registered in the global scope bucket (no `scopes:` argument) and gates on the current panel inside the closure via `Filament::getCurrentOrDefaultPanel()`, which also makes `onlyPanels()` work correctly when a single plugin instance might be booted on more than one panel. Any consumer on v1.2.0 or v1.2.1 who couldn't see the widget should now see it on upgrade.
+
 ## [1.3.1] - 2026-04-24
 
 Patch release. No consumer-visible changes — internal pruning only.
