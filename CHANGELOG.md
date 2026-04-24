@@ -19,6 +19,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.2.0] - 2026-04-24
+
+### Added
+
+- Fluent `navigationGroup()`, `navigationSort()` and `navigationIcon()`
+  builders on `ReqdeskWidgetPlugin`. The settings page now honours whatever
+  the host panel configures, falling back to the previous translated group
+  label and `heroicon-o-lifebuoy` icon when unset. Group accepts
+  `string|UnitEnum|null` to cover both bare-case enums (the common Filament
+  pattern) and backed enums.
+- Fluent `authorize(string|Closure|null)` builder on `ReqdeskWidgetPlugin`
+  plus a `canAccess()` override on `ReqdeskSettings`. When set the settings
+  page is gated by the given Gate ability or closure; when unset the page
+  stays accessible (no BC break).
+- README sections covering navigation, access control, multi-panel usage
+  and custom-guard identity middleware.
+
+### Fixed
+
+- **Multi-panel render-hook leakage.** `FilamentView::registerRenderHook` is
+  now scoped to `$panel->getId()` instead of `$panel::class`, so the widget
+  injects only into the panels that actually register the plugin.
+- **`make()` returns a fresh instance.** Previously deferred to the
+  container, which would have leaked fluent state between panels if anyone
+  bound `ReqdeskWidgetPlugin` as a singleton. `new static()` makes the
+  always-fresh semantics explicit.
+- **PostgreSQL migration abort.** The settings migration now opts out of
+  Laravel's wrapping transaction (`public bool $withinTransaction = false`)
+  and guards every `add()` with `SettingsMigrator::exists()`, fixing the
+  `SQLSTATE[25P02] current transaction is aborted` failure when running
+  `php artisan migrate --path=...` on PG. The migration is also idempotent
+  across re-runs.
+- **Install command no longer skips migrations in CI.** Switched from
+  `askToRunMigrations()` to `runsMigrations()`, so `--no-interaction`
+  deploys populate the settings table automatically.
+- **Fresh-install boot order.** `ReqdeskClient` and `WidgetConfigBuilder`
+  now resolve `ReqdeskWidgetSettings` lazily inside methods instead of
+  receiving it as a constructor argument. The plugin can register before
+  migrations have run without throwing at container-resolution time.
+- **`inject_for_guests` env fallback.** `WidgetConfigBuilder::build()` now
+  reads `REQDESK_INJECT_GUESTS` when the settings row is absent, matching
+  every other field's behaviour.
+
 ## [1.1.0] - 2026-04-23
 
 ### Added

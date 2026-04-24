@@ -76,7 +76,102 @@ REQDESK_SIGNING_SECRET=your_server_side_hmac_secret
 ->plugin(ReqdeskWidgetPlugin::make())
 ```
 
-Full walkthrough: [`docs/01-quickstart.md`](docs/01-quickstart.md).
+Full walkthrough: [`docs/01-quickstart.md`](docs/01-quickstart.md). The install command
+runs the package migration non-interactively, so CI / `--no-interaction` deploys
+land with the settings table populated.
+
+## Navigation & placement
+
+By default the settings page appears under its own "Reqdesk" group with a
+lifebuoy icon. Place it under an existing group, pin a sort position, and
+swap the icon with the fluent builders:
+
+```php
+use App\Filament\Navigation\NavigationGroup;
+use Reqdesk\Filament\ReqdeskWidgetPlugin;
+
+$panel->plugin(
+    ReqdeskWidgetPlugin::make()
+        ->navigationGroup(NavigationGroup::Support) // string or UnitEnum
+        ->navigationSort(60)
+        ->navigationIcon('heroicon-o-chat-bubble-left-right') // string or BackedEnum
+);
+```
+
+Any of the three builders may be omitted; omitted ones keep their existing
+defaults. The group accepts plain unit enums as well as backed enums, matching
+Filament's own navigation signature.
+
+## Access control
+
+The settings page exposes `api_key` and `signing_secret`, so multi-role panels
+should gate it. Pass a Gate ability or a closure to `authorize()`:
+
+```php
+// String ability — pairs with a Gate::define(...) or a Policy
+$panel->plugin(
+    ReqdeskWidgetPlugin::make()->authorize('reqdesk.settings.manage')
+);
+
+// Closure — receives the current user (nullable)
+$panel->plugin(
+    ReqdeskWidgetPlugin::make()->authorize(
+        fn ($user): bool => $user?->isAdmin() ?? false,
+    )
+);
+```
+
+When `authorize()` is not called the page stays accessible (unchanged default).
+`bezhansalleh/filament-shield` consumers can leave `authorize()` unset and rely
+on Shield's per-page permission auto-discovery — `ReqdeskSettings` participates
+in `shield:generate` like any other Filament page.
+
+## Multi-panel usage
+
+Each `->plugin(ReqdeskWidgetPlugin::make())` call produces its own plugin
+instance, and the render hook is scoped to the registering panel's id. Two
+panels, two independent configurations:
+
+```php
+// AdminPanelProvider
+$panel->plugin(ReqdeskWidgetPlugin::make()->navigationGroup('Support'));
+
+// AgentPanelProvider — widget only, no settings page
+$panel->plugin(
+    ReqdeskWidgetPlugin::make()
+        ->registerSettingsPage(false)
+);
+```
+
+The widget is injected only into the panels that register the plugin.
+
+See [`docs/06-multi-panel.md`](docs/06-multi-panel.md) for the deep dive.
+
+## Custom guards & identity middleware
+
+The signed-identity refresh endpoint is protected by `web,auth` by default.
+Consumers on a non-default guard (for example a Filament panel authenticated
+through `auth:agent` or a portal using a custom session driver) can override
+the middleware stack via env:
+
+```ini
+# Single non-default guard
+REQDESK_IDENTITY_MIDDLEWARE=web,auth:agent
+
+# Multiple guards — auth middleware tries each left-to-right
+REQDESK_IDENTITY_MIDDLEWARE=web,auth:web,agent
+```
+
+The endpoint itself can also be moved:
+
+```ini
+REQDESK_IDENTITY_ENDPOINT=/support/identity
+```
+
+Both values are also exposed through `config/reqdesk-widget.php` under the
+`identity` key if you prefer a published config over env.
+
+See [`docs/03-identity.md`](docs/03-identity.md) for the full identity flow.
 
 ## License
 

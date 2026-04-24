@@ -17,11 +17,15 @@ use Throwable;
  * consumed by ReqdeskWidget.init(...). Layers a signed identity when the
  * resolver returns an email and a signing secret is available. Always
  * degrades gracefully — never throws into a render hook.
+ *
+ * Settings are resolved lazily so the builder can be instantiated on a
+ * fresh install before the settings migration has populated the table.
  */
 final class WidgetConfigBuilder
 {
+    private ?ReqdeskWidgetSettings $settings = null;
+
     public function __construct(
-        private readonly ReqdeskWidgetSettings $settings,
         private readonly IdentitySigner $signer,
         private readonly Container $container,
     ) {}
@@ -31,7 +35,9 @@ final class WidgetConfigBuilder
      */
     public function build(?Authenticatable $user): ?array
     {
-        if (! $this->settings->enabled) {
+        $settings = $this->settings();
+
+        if (! $settings->enabled) {
             return null;
         }
 
@@ -47,23 +53,23 @@ final class WidgetConfigBuilder
         $canSign = $identity !== null && is_string($signingSecret) && $signingSecret !== '';
 
         $authMode = $canSign
-            ? $this->settings->auth_mode_when_signed
-            : $this->settings->auth_mode_when_anonymous;
+            ? $settings->auth_mode_when_signed
+            : $settings->auth_mode_when_anonymous;
 
         $init = array_filter([
             'apiKey' => $apiKey,
             'apiUrl' => $this->resolveSettingOrConfig('api_url'),
-            'widget' => $this->settings->widget_mode,
-            'position' => $this->settings->position,
-            'language' => $this->settings->default_language,
+            'widget' => $settings->widget_mode,
+            'position' => $settings->position,
+            'language' => $settings->default_language,
             'theme' => $this->buildTheme(),
             'display' => $this->buildDisplay(),
-            'hideFab' => $this->settings->hide_fab,
-            'hideDisplayModePicker' => $this->settings->hide_display_mode_picker,
-            'fabIcon' => $this->settings->fab_icon,
+            'hideFab' => $settings->hide_fab,
+            'hideDisplayModePicker' => $settings->hide_display_mode_picker,
+            'fabIcon' => $settings->fab_icon,
             'authMode' => $authMode,
-            'defaultCategory' => $this->settings->default_category,
-            'translations' => $this->settings->translations !== [] ? $this->settings->translations : null,
+            'defaultCategory' => $settings->default_category,
+            'translations' => $settings->translations !== [] ? $settings->translations : null,
             'actions' => $this->buildActions(),
         ], fn ($value): bool => $value !== null && $value !== '' && $value !== []);
 
@@ -80,7 +86,7 @@ final class WidgetConfigBuilder
             } catch (Throwable $exception) {
                 report($exception);
                 $canSign = false;
-                $init['authMode'] = $this->settings->auth_mode_when_anonymous;
+                $init['authMode'] = $settings->auth_mode_when_anonymous;
             }
         }
 
@@ -88,9 +94,14 @@ final class WidgetConfigBuilder
             'scriptUrl' => $this->resolveScriptUrl(),
             'init' => $init,
             'identifyEndpoint' => $canSign ? $this->identifyEndpoint() : null,
-            'panels' => $this->settings->panels,
-            'injectForGuests' => $this->settings->inject_for_guests,
+            'panels' => $settings->panels,
+            'injectForGuests' => $this->resolveBoolSettingOrConfig('inject_for_guests', false),
         ];
+    }
+
+    private function settings(): ReqdeskWidgetSettings
+    {
+        return $this->settings ??= $this->container->make(ReqdeskWidgetSettings::class);
     }
 
     /**
@@ -115,7 +126,7 @@ final class WidgetConfigBuilder
 
     private function resolveUserResolver(): WidgetUserResolver
     {
-        $class = $this->settings->user_resolver;
+        $class = $this->settings()->user_resolver;
 
         if ($class === '') {
             $class = (string) config('reqdesk-widget.user_resolver', DefaultUserResolver::class);
@@ -132,7 +143,7 @@ final class WidgetConfigBuilder
     private function resolveSettingOrConfig(string $key): ?string
     {
         /** @var mixed $value */
-        $value = $this->settings->{$key} ?? null;
+        $value = $this->settings()->{$key} ?? null;
 
         if (is_string($value) && $value !== '') {
             return $value;
@@ -143,20 +154,41 @@ final class WidgetConfigBuilder
         return is_string($fallback) && $fallback !== '' ? $fallback : null;
     }
 
+    private function resolveBoolSettingOrConfig(string $key, bool $default): bool
+    {
+        /** @var mixed $value */
+        $value = $this->settings()->{$key} ?? null;
+
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        /** @var mixed $fallback */
+        $fallback = config("reqdesk-widget.{$key}");
+
+        if (is_bool($fallback)) {
+            return $fallback;
+        }
+
+        return $default;
+    }
+
     /**
      * @return array<string,mixed>
      */
     private function buildTheme(): array
     {
+        $settings = $this->settings();
+
         return array_filter([
-            'primaryColor' => $this->settings->theme_primary_color,
-            'mode' => $this->settings->theme_mode,
-            'borderRadius' => $this->settings->theme_border_radius,
-            'fontFamily' => $this->settings->theme_font_family,
-            'zIndex' => $this->settings->theme_z_index,
-            'logo' => $this->settings->theme_logo,
-            'brandName' => $this->settings->theme_brand_name,
-            'hideBranding' => $this->settings->theme_hide_branding,
+            'primaryColor' => $settings->theme_primary_color,
+            'mode' => $settings->theme_mode,
+            'borderRadius' => $settings->theme_border_radius,
+            'fontFamily' => $settings->theme_font_family,
+            'zIndex' => $settings->theme_z_index,
+            'logo' => $settings->theme_logo,
+            'brandName' => $settings->theme_brand_name,
+            'hideBranding' => $settings->theme_hide_branding,
         ], fn ($value): bool => $value !== null && $value !== '');
     }
 
@@ -165,12 +197,14 @@ final class WidgetConfigBuilder
      */
     private function buildDisplay(): array
     {
+        $settings = $this->settings();
+
         return array_filter([
-            'mode' => $this->settings->display_mode,
-            'side' => $this->settings->display_side,
-            'width' => $this->settings->display_width,
-            'height' => $this->settings->display_height,
-            'dismissOnBackdrop' => $this->settings->display_dismiss_on_backdrop,
+            'mode' => $settings->display_mode,
+            'side' => $settings->display_side,
+            'width' => $settings->display_width,
+            'height' => $settings->display_height,
+            'dismissOnBackdrop' => $settings->display_dismiss_on_backdrop,
         ], fn ($value): bool => $value !== null && $value !== '');
     }
 
@@ -181,7 +215,7 @@ final class WidgetConfigBuilder
     {
         $result = [];
 
-        foreach ($this->settings->actions as $action) {
+        foreach ($this->settings()->actions as $action) {
             $id = $action['id'];
             $labelEn = $action['label_en'];
             if ($id === '' || $labelEn === '') {
@@ -235,7 +269,7 @@ final class WidgetConfigBuilder
 
     private function resolveScriptUrl(): string
     {
-        $override = $this->settings->script_url;
+        $override = $this->settings()->script_url;
         if (is_string($override) && $override !== '') {
             return $override;
         }

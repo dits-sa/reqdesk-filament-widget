@@ -39,6 +39,11 @@ final class ReqdeskWidgetServiceProvider extends PackageServiceProvider
                     ->publishMigrations()
                     ->askToRunMigrations()
                     ->endWith(function (InstallCommand $cmd): void {
+                        if ($cmd->option('no-interaction')) {
+                            $cmd->info('Running migrations non-interactively...');
+                            $cmd->call('migrate', ['--force' => true]);
+                        }
+
                         $requireSigning = ! (bool) config('reqdesk-widget.install_skip_signing', false);
                         $report = app(ConfigValidator::class)->validateEnvironment(
                             requireSigningSecret: $requireSigning,

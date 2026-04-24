@@ -13,14 +13,15 @@ use Reqdesk\Filament\Settings\ReqdeskWidgetSettings;
  * "Test connection" action in the settings page and by the doctor command.
  * Kept intentionally small — the plugin's primary integration is the
  * browser-side widget, not server-to-server calls.
+ *
+ * Settings are resolved lazily so the service can be instantiated on a
+ * fresh install before the settings migration has populated the table.
  */
 final class ReqdeskClient
 {
     private ?Client $client = null;
 
-    public function __construct(
-        private readonly ReqdeskWidgetSettings $settings,
-    ) {}
+    private ?ReqdeskWidgetSettings $settings = null;
 
     public function ping(): ReqdeskPingResult
     {
@@ -59,9 +60,14 @@ final class ReqdeskClient
         ]);
     }
 
+    private function settings(): ReqdeskWidgetSettings
+    {
+        return $this->settings ??= app(ReqdeskWidgetSettings::class);
+    }
+
     private function apiKey(): string
     {
-        $value = $this->settings->api_key;
+        $value = $this->settings()->api_key;
         if (is_string($value) && $value !== '') {
             return $value;
         }
@@ -71,7 +77,7 @@ final class ReqdeskClient
 
     private function apiUrl(): string
     {
-        $value = $this->settings->api_url;
+        $value = $this->settings()->api_url;
         if (is_string($value) && $value !== '') {
             return $value;
         }
