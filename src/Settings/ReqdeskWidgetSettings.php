@@ -68,7 +68,16 @@ class ReqdeskWidgetSettings extends Settings
 
     public string $user_resolver = DefaultUserResolver::class;
 
-    /** @var list<array{id:string,label_en:string,label_ar?:string,description?:string,section?:string,icon?:string,trigger_kind?:string,trigger_value?:string,trigger_target?:string}> */
+    /**
+     * Persisted as a JSON blob by spatie/laravel-settings — the runtime
+     * shape is documented by @phpstan-var so static analysis keeps the
+     * per-key guarantees, while the native `array` type lets spatie skip
+     * nested casting. Do NOT add a plain @var with a nested array shape
+     * here: spatie's PropertyReflector goes through
+     * phpdocumentor/type-resolver and throws on nested array shapes.
+     *
+     * @phpstan-var list<array{id:string,label_en:string,label_ar?:string,description?:string,section?:string,icon?:string,trigger_kind?:string,trigger_value?:string,trigger_target?:string}>
+     */
     public array $actions = [];
 
     public bool $enabled = true;

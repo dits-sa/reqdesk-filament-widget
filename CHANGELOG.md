@@ -19,6 +19,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.2.1] - 2026-04-24
+
+### Fixed
+
+- **Settings hydration no longer throws on `ReqdeskWidgetSettings::$actions`.**
+  The property's `@var` shape was `list<array{id:string,label_en:string,...}>`
+  — valid PHPStan/Psalm syntax but not parseable by
+  `phpdocumentor/type-resolver`, which is what `spatie/laravel-settings`
+  uses internally. Any code path that fully hydrates the settings class
+  (notably `ReqdeskClient::ping()`, every save of the settings page, and
+  the `reqdesk-widget:doctor` command without `--skip-ping`) was throwing
+  `RuntimeException: Unexpected token "", expected '>'`. The plain `@var`
+  is dropped in favour of the native PHP `array` type so spatie skips the
+  nested cast entirely; the full shape is preserved in `@phpstan-var`
+  for IDE/static-analysis fidelity. No runtime behaviour change — the
+  property was already persisted as an untyped JSON blob.
+
 ## [1.2.0] - 2026-04-24
 
 ### Added

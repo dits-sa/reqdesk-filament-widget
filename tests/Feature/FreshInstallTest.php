@@ -27,6 +27,6 @@ it('resolves WidgetConfigBuilder without requiring ReqdeskWidgetSettings in the 
 });
 
 it('constructs ReqdeskClient via new without any arguments', function (): void {
-    expect(fn () => new ReqdeskClient())
+    expect(fn () => new ReqdeskClient)
         ->not->toThrow(Throwable::class);
 });
