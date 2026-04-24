@@ -89,7 +89,22 @@ class ReqdeskSettings extends Page
 
     public function mount(): void
     {
-        $this->form->fill($this->settings()->toArray());
+        $data = $this->settings()->toArray();
+
+        foreach ($data as $key => $value) {
+            if ($value !== null && $value !== '') {
+                continue;
+            }
+
+            $fallback = config("reqdesk-widget.{$key}");
+            if ($fallback === null || $fallback === '') {
+                continue;
+            }
+
+            $data[$key] = $fallback;
+        }
+
+        $this->form->fill($data);
     }
 
     public function form(Schema $schema): Schema

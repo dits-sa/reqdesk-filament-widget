@@ -14,7 +14,6 @@ return new class extends SettingsMigration
             'reqdesk_widget.api_key' => null,
             'reqdesk_widget.api_url' => null,
             'reqdesk_widget.signing_secret' => null,
-            'reqdesk_widget.project_id' => null,
 
             'reqdesk_widget.theme_primary_color' => '#0F5E56',
             'reqdesk_widget.theme_mode' => 'auto',

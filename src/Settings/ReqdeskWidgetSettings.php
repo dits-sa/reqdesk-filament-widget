@@ -15,8 +15,6 @@ class ReqdeskWidgetSettings extends Settings
 
     public ?string $signing_secret = null;
 
-    public ?string $project_id = null;
-
     public string $theme_primary_color = '#0F5E56';
 
     public string $theme_mode = 'auto';

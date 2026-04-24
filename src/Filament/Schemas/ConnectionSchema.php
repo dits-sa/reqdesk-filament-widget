@@ -30,10 +30,6 @@ final class ConnectionSchema
                     ->url()
                     ->placeholder('https://app.reqdesk.com'),
 
-                TextInput::make('project_id')
-                    ->label(__('reqdesk-widget::reqdesk-widget.fields.project_id.label'))
-                    ->helperText(__('reqdesk-widget::reqdesk-widget.fields.project_id.help')),
-
                 TextInput::make('signing_secret')
                     ->label(__('reqdesk-widget::reqdesk-widget.fields.signing_secret.label'))
                     ->helperText(__('reqdesk-widget::reqdesk-widget.fields.signing_secret.help'))

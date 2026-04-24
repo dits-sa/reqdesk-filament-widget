@@ -34,10 +34,6 @@ return [
             'label' => 'Signing secret',
             'help' => 'HMAC secret used to sign the authenticated user identity. Keep this server-side.',
         ],
-        'project_id' => [
-            'label' => 'Project ID',
-            'help' => 'Optional — usually derived from the API key prefix.',
-        ],
         'theme_primary_color' => ['label' => 'Primary colour'],
         'theme_mode' => ['label' => 'Theme mode'],
         'theme_border_radius' => ['label' => 'Border radius'],

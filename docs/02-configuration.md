@@ -22,7 +22,6 @@ Secrets (`api_key`, `signing_secret`) are encrypted at rest by spatie/laravel-se
 | `api_key` | `REQDESK_API_KEY` | — | **Required.** `rqd_pk_...` (project) or `rqd_ws_...` (workspace) key. Exposed in the browser. |
 | `api_url` | `REQDESK_API_URL` | `https://app.reqdesk.com` | Your Reqdesk backend. Override for self-hosted deployments. |
 | `signing_secret` | `REQDESK_SIGNING_SECRET` | — | HMAC-SHA256 secret for signed host-app identity. **Server-side only.** |
-| `project_id` | `REQDESK_PROJECT_ID` | *(derived)* | Optional. Usually inferable from the API key prefix. |
 
 ## Identity
 

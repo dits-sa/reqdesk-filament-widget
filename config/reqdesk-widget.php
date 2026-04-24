@@ -24,7 +24,6 @@ return [
     'api_key' => env('REQDESK_API_KEY'),
     'api_url' => env('REQDESK_API_URL', 'https://app.reqdesk.com'),
     'signing_secret' => env('REQDESK_SIGNING_SECRET'),
-    'project_id' => env('REQDESK_PROJECT_ID'),
 
     /*
     |--------------------------------------------------------------------------

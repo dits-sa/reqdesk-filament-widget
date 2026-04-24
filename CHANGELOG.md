@@ -19,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.3.0] - 2026-04-24
+
+### Removed
+
+- **`project_id` field — declared but never used.** The `ReqdeskWidgetSettings::$project_id` property, the `project_id` form input, the `REQDESK_PROJECT_ID` env / `reqdesk-widget.project_id` config key, the `fields.project_id` English + Arabic translation blocks, and the migration default are all gone. `WidgetConfigBuilder::build()` never read this value in any v1.x release, so the widget init payload never contained a project id; `rqd_pk_*` and `rqd_ws_*` API keys already encode project scope server-side, so there was nothing for the field to do. A new idempotent migration (`remove_reqdesk_widget_project_id.php.stub`) deletes the orphaned settings row on upgrade via `SettingsMigrator::deleteIfExists()`; fresh installs skip the delete cleanly. Consumers accessing `$settings->project_id` in their own code will hit an undefined-property error after upgrading — because the field was always `null`, no behavioural regression is possible.
+
+### Fixed
+
+- **Connection tab now shows env defaults on first load.** `ReqdeskSettings::mount()` falls back to `config('reqdesk-widget.*')` for any null or empty settings value, matching the runtime fallback that `WidgetConfigBuilder::resolveSettingOrConfig()` already applied to the widget payload. Admins no longer have to paste `.env` values into the form manually before Save works — the form mirrors what the widget is already using. `save()` behaviour is unchanged; persisted values take precedence on subsequent loads.
+
 ## [1.2.1] - 2026-04-24
 
 ### Fixed
