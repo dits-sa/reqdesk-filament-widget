@@ -32,7 +32,6 @@ final class ReqdeskWidgetServiceProvider extends PackageServiceProvider
             ->hasViews('reqdesk')
             ->hasRoute('widget')
             ->hasMigration('create_reqdesk_widget_settings')
-            ->hasMigration('remove_reqdesk_widget_project_id')
             ->hasCommand(DoctorCommand::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command
