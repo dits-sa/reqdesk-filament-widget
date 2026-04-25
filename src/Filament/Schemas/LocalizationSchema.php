@@ -8,7 +8,6 @@ use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
-use Reqdesk\Filament\Enums\WidgetMode;
 
 final class LocalizationSchema
 {
@@ -24,12 +23,6 @@ final class LocalizationSchema
                         'ar' => 'العربية',
                     ])
                     ->default('en')
-                    ->required(),
-
-                Select::make('widget_mode')
-                    ->label(__('reqdesk-widget::reqdesk-widget.fields.widget_mode.label'))
-                    ->options(WidgetMode::class)
-                    ->default(WidgetMode::TicketForm->value)
                     ->required(),
 
                 TextInput::make('default_category')

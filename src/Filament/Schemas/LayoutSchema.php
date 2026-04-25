@@ -13,6 +13,7 @@ use Reqdesk\Filament\Enums\DisplayMode;
 use Reqdesk\Filament\Enums\FabIcon;
 use Reqdesk\Filament\Enums\Position;
 use Reqdesk\Filament\Enums\SheetSide;
+use Reqdesk\Filament\Enums\WidgetMode;
 
 final class LayoutSchema
 {
@@ -21,6 +22,12 @@ final class LayoutSchema
         return Section::make(__('reqdesk-widget::reqdesk-widget.tabs.layout'))
             ->columns(2)
             ->schema([
+                Select::make('widget_mode')
+                    ->label(__('reqdesk-widget::reqdesk-widget.fields.widget_mode.label'))
+                    ->options(WidgetMode::class)
+                    ->default(WidgetMode::SupportPortal->value)
+                    ->required(),
+
                 Select::make('position')
                     ->label(__('reqdesk-widget::reqdesk-widget.fields.position.label'))
                     ->options(Position::class)

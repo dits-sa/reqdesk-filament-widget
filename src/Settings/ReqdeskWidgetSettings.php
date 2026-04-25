@@ -51,7 +51,7 @@ class ReqdeskWidgetSettings extends Settings
 
     public string $default_language = 'en';
 
-    public string $widget_mode = 'ticket-form';
+    public string $widget_mode = 'support-portal';
 
     public ?string $default_category = null;
 

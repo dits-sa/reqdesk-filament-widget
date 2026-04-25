@@ -19,6 +19,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.3.5] - 2026-04-25
+
+### Fixed
+
+- **Saving the settings page no longer throws `TypeError: Cannot assign Reqdesk\Filament\Enums\ThemeMode to property … of type string`.** Filament's `Select` returns the `BackedEnum` case when its options are typed as an enum class, but the spatie-settings properties are typed `string` so spatie can persist them as JSON. `ReqdeskSettings::save()` now coerces every enum back to its scalar form (BackedEnum → `->value`, UnitEnum → `->name`, recursively into arrays) before assigning. Affects `theme_mode`, `position`, `display_mode`, `display_side`, `fab_icon`, `widget_mode`, and any future enum-backed Select.
+
+### Changed
+
+- **`widget_mode` moved from the Localization tab to the Layout tab** — it controls layout/structure, not language or copy. Existing values are unaffected.
+- **`widget_mode` default flipped from `ticket-form` → `support-portal`.** The portal mode is the better landing experience for the average consumer (browse + search before filing). Existing installs are unchanged — defaults only apply to fresh installs and to fields whose persisted value is null.
+
 ## [1.3.4] - 2026-04-25
 
 ### Changed

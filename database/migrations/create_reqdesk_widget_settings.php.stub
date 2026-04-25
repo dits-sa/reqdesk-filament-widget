@@ -35,7 +35,7 @@ return new class extends SettingsMigration
             'reqdesk_widget.fab_icon' => 'help',
 
             'reqdesk_widget.default_language' => 'en',
-            'reqdesk_widget.widget_mode' => 'ticket-form',
+            'reqdesk_widget.widget_mode' => 'support-portal',
             'reqdesk_widget.default_category' => null,
             'reqdesk_widget.translations' => [],
 

@@ -63,7 +63,7 @@ return [
     */
 
     'default_language' => env('REQDESK_LANGUAGE', 'en'),
-    'widget_mode' => env('REQDESK_WIDGET_MODE', 'ticket-form'),
+    'widget_mode' => env('REQDESK_WIDGET_MODE', 'support-portal'),
     'default_category' => env('REQDESK_DEFAULT_CATEGORY'),
 
     /*

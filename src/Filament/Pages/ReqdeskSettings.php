@@ -140,9 +140,16 @@ class ReqdeskSettings extends Page
         $settings = $this->settings();
 
         foreach ($data as $key => $value) {
-            if (property_exists($settings, $key)) {
-                $settings->{$key} = $value;
+            if (! property_exists($settings, $key)) {
+                continue;
             }
+
+            // Filament's Select component returns enum cases when options
+            // are typed as BackedEnum, but the settings properties are
+            // typed `string` / `int` (not enum) so spatie can persist
+            // them as JSON. Coerce every enum back to its scalar form
+            // before assigning, otherwise PHP throws TypeError.
+            $settings->{$key} = $this->coerceForSettings($value);
         }
 
         $settings->save();
@@ -151,6 +158,23 @@ class ReqdeskSettings extends Page
             ->success()
             ->title(__('reqdesk-widget::reqdesk-widget.page.saved'))
             ->send();
+    }
+
+    private function coerceForSettings(mixed $value): mixed
+    {
+        if ($value instanceof BackedEnum) {
+            return $value->value;
+        }
+
+        if ($value instanceof UnitEnum) {
+            return $value->name;
+        }
+
+        if (is_array($value)) {
+            return array_map(fn ($item): mixed => $this->coerceForSettings($item), $value);
+        }
+
+        return $value;
     }
 
     public function testConnection(): void
