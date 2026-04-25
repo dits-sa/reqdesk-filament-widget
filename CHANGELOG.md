@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.3.4] - 2026-04-25
+
+### Changed
+
+- **`script_url_default` moved to `cdn.reqdesk.support` and bumped to widget 1.2.22.** The previous URL on `cdn.reqdesk.mod-sol-sa.com` is being retired in favour of the product-owned `reqdesk.support` apex. The 1.2.22 widget bundle also fixes a critical regression where the IIFE distribution shipped with `ofetch` externalised — every consumer of v1.2.20 / v1.2.21 saw `Uncaught ReferenceError: ofetch is not defined` and `window.ReqdeskWidget` never registered. Old pin URLs (`mod-sol-sa.com` host or 1.2.20 / 1.2.21 versions) keep working until the old domain is unwired in Dokploy, so consumers have time to upgrade. The override chain (`REQDESK_SCRIPT_URL` env → `reqdesk-widget.script_url` config → `ReqdeskWidgetSettings::$script_url`) is unchanged.
+
 ## [1.3.3] - 2026-04-25
 
 ### Changed

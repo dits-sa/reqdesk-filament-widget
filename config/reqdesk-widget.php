@@ -117,7 +117,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Pinned default, served from the Reqdesk-owned CDN
-    | (cdn.reqdesk.mod-sol-sa.com). Hosted on Dokploy behind Traefik +
+    | (cdn.reqdesk.support). Hosted on Dokploy behind Traefik +
     | Let's Encrypt — see docs/guides/cdn-dokploy.md in the main Reqdesk
     | repo. Override via REQDESK_SCRIPT_URL when pinning a specific
     | version, hosting the widget yourself, or testing a pre-release
@@ -125,5 +125,5 @@ return [
     |
     */
 
-    'script_url_default' => 'https://cdn.reqdesk.mod-sol-sa.com/widget/1.2.20/index.iife.js',
+    'script_url_default' => 'https://cdn.reqdesk.support/widget/1.2.22/index.iife.js',
 ];
