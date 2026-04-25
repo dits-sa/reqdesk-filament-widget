@@ -125,5 +125,5 @@ return [
     |
     */
 
-    'script_url_default' => 'https://cdn.reqdesk.support/widget/1.3.0/index.iife.js',
+    'script_url_default' => 'https://cdn.reqdesk.support/widget/1.4.1/index.iife.js',
 ];

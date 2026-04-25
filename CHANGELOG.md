@@ -19,6 +19,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.4.0] - 2026-04-26
+
+### Changed
+
+- **`script_url_default` bumped to widget 1.4.1.** The 1.4.x widget line ships
+  the `HostAdapter` contract — the same React tree the browser-extension popup
+  consumes — and lays the groundwork for server-resolved auto-detect of the
+  current page's project (`POST /widget/projects/resolve-by-url` in the
+  Reqdesk API). The IIFE bundle grew from ~114 kB gzip → ~115 kB gzip
+  (+1 kB) for the adapter wiring and is served `Cache-Control: immutable`
+  from the CDN so consumers pay it once per version. Override chain is
+  unchanged — `REQDESK_SCRIPT_URL` still pins the URL site-wide and 1.3.0
+  remains live on the CDN via the retention list, so anyone who copy-pasted
+  the previous default into their `.env` keeps working unchanged.
+
 ## [1.3.7] - 2026-04-25
 
 ### Changed
