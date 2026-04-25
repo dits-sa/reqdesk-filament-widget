@@ -40,7 +40,11 @@ final class AppearanceSchema
 
                 TextInput::make('theme_z_index')
                     ->label(__('reqdesk-widget::reqdesk-widget.fields.theme_z_index.label'))
+                    ->numeric()
                     ->integer()
+                    ->step(1)
+                    ->minValue(0)
+                    ->maxValue(2147483647)
                     ->default(9999),
 
                 TextInput::make('theme_brand_name')

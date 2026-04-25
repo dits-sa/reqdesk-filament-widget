@@ -19,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.3.6] - 2026-04-25
+
+### Fixed
+
+- **Settings save now type-coerces every value against the destination property's reflection type, not just enums.** v1.3.5 unwrapped enums but missed every other Filament/Livewire/JSON round-trip mismatch — `theme_z_index` accepted `9999.0` (float, not int) from `TextInput->numeric()` and threw `TypeError: Cannot assign float to property … of type int`. Same class of failure waited on `?string` fields receiving `""` instead of `null`, `bool` properties receiving `"1"`/`"0"`, and `array` properties receiving non-arrays.
+
+  `ReqdeskSettings::coerceForProperty()` now reflects on the property's declared type and coerces accordingly: int (rounds floats and numeric strings, falls back to the property default for empty input), float (same), bool (handles `"1"`/`"0"`/`"true"`/`"false"`/numeric/null), string (stringifies ints/floats, returns null for `""` on `?string`, returns null for arrays on `?string`), array (forces `[]` on non-array). Enums unwrap first via `BackedEnum->value` / `UnitEnum->name`, recursing into arrays. 11 Pest tests lock the contract per shape.
+
+- **`theme_z_index` field tightened.** The TextInput now declares `->numeric()->integer()->step(1)->minValue(0)->maxValue(2147483647)` so users can't even submit a non-integer.
+
 ## [1.3.5] - 2026-04-25
 
 ### Fixed

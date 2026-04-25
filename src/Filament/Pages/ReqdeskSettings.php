@@ -144,12 +144,16 @@ class ReqdeskSettings extends Page
                 continue;
             }
 
-            // Filament's Select component returns enum cases when options
-            // are typed as BackedEnum, but the settings properties are
-            // typed `string` / `int` (not enum) so spatie can persist
-            // them as JSON. Coerce every enum back to its scalar form
-            // before assigning, otherwise PHP throws TypeError.
-            $settings->{$key} = $this->coerceForSettings($value);
+            // Filament + Livewire + JSON round-tripping all hand back
+            // values whose type does not always match the spatie-settings
+            // declaration: BackedEnum cases from Select, floats from
+            // `TextInput->numeric()` (Livewire serialises numbers as JSON
+            // numbers, which become PHP floats on decode), strings instead
+            // of bools from toggle widgets in some Filament versions, and
+            // empty strings where the property is `?type` and expects null.
+            // Coerce against the property's declared reflection type so
+            // every assignment becomes legal under strict_types.
+            $settings->{$key} = self::coerceForProperty($settings::class, $key, $value);
         }
 
         $settings->save();
@@ -160,7 +164,48 @@ class ReqdeskSettings extends Page
             ->send();
     }
 
-    private function coerceForSettings(mixed $value): mixed
+    /**
+     * Coerce a single form value to match the type declaration of a
+     * settings property. Static so tests can exercise it without needing
+     * to instantiate the settings class — instantiation goes through
+     * spatie's cast factory, which has a different (orthogonal) failure
+     * surface in some environments.
+     *
+     * @param  class-string  $settingsClass
+     */
+    public static function coerceForProperty(string $settingsClass, string $key, mixed $value): mixed
+    {
+        $value = self::unwrapEnums($value);
+
+        try {
+            $reflection = new \ReflectionProperty($settingsClass, $key);
+        } catch (\ReflectionException) {
+            return $value;
+        }
+
+        $type = $reflection->getType();
+        if (! $type instanceof \ReflectionNamedType) {
+            return $value;
+        }
+
+        $allowsNull = $type->allowsNull();
+        $name = $type->getName();
+
+        if (($value === null || $value === '') && $allowsNull) {
+            return null;
+        }
+
+        return match ($name) {
+            'int' => self::toInt($value, $reflection),
+            'float' => self::toFloat($value, $reflection),
+            'bool' => self::toBool($value),
+            'string' => self::toString($value, $allowsNull),
+            'array' => is_array($value) ? $value : [],
+            default => $value,
+        };
+    }
+
+    private static function unwrapEnums(mixed $value): mixed
     {
         if ($value instanceof BackedEnum) {
             return $value->value;
@@ -171,10 +216,96 @@ class ReqdeskSettings extends Page
         }
 
         if (is_array($value)) {
-            return array_map(fn ($item): mixed => $this->coerceForSettings($item), $value);
+            return array_map(fn ($item): mixed => self::unwrapEnums($item), $value);
         }
 
         return $value;
+    }
+
+    private static function toInt(mixed $value, \ReflectionProperty $reflection): int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_float($value)) {
+            return (int) round($value);
+        }
+
+        if (is_numeric($value)) {
+            return (int) round((float) $value);
+        }
+
+        if ($value === null || $value === '' || is_bool($value)) {
+            $default = $reflection->hasDefaultValue() ? $reflection->getDefaultValue() : 0;
+
+            return is_int($default) ? $default : 0;
+        }
+
+        return 0;
+    }
+
+    private static function toFloat(mixed $value, \ReflectionProperty $reflection): float
+    {
+        if (is_float($value)) {
+            return $value;
+        }
+
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+
+        if ($value === null || $value === '' || is_bool($value)) {
+            $default = $reflection->hasDefaultValue() ? $reflection->getDefaultValue() : 0.0;
+
+            return is_float($default) || is_int($default) ? (float) $default : 0.0;
+        }
+
+        return 0.0;
+    }
+
+    private static function toBool(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return $value !== 0 && $value !== 0.0;
+        }
+
+        if (is_string($value)) {
+            $lower = strtolower(trim($value));
+
+            return ! in_array($lower, ['', '0', 'false', 'off', 'no', 'null'], true);
+        }
+
+        return (bool) $value;
+    }
+
+    private static function toString(mixed $value, bool $allowsNull): ?string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if ($value === null) {
+            return $allowsNull ? null : '';
+        }
+
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        if (is_array($value)) {
+            return $allowsNull ? null : '';
+        }
+
+        return (string) $value;
     }
 
     public function testConnection(): void
