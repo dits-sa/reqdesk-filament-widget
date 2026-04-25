@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.3.7] - 2026-04-25
+
+### Changed
+
+- **`script_url_default` bumped to widget 1.3.0.** The 1.3.0 widget IIFE bundle now boots the full React tree instead of the legacy stripped-down vanilla renderer, closing a real gap in `support-portal` mode where the new-ticket form only had title + description. Existing integrations get categories, tags, attachments, priority, signed identity, multi-project picker, and RTL out of the box on next page load. Bundle size grew (~114 kB gzip from the CDN) but is served `Cache-Control: immutable` so consumers pay it once per version. Override chain is unchanged — anyone pinning `REQDESK_SCRIPT_URL` keeps working, and 1.2.23 stays live on the CDN via the retention list.
+
 ## [1.3.6] - 2026-04-25
 
 ### Fixed
