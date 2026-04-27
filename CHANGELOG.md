@@ -19,6 +19,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.5.1] - 2026-04-27
+
+### Fixed
+
+- **`script_url_default` bumped to widget 1.5.1.** The 1.5.0 panel chrome
+  (header + footer) and the preferences picker hard-coded light-mode
+  fallback colours, leaving the surfaces visually mismatched in dark mode
+  and on hosts that override the panel via `--rqd-bg`/`--rqd-text`. 1.5.1
+  drives every shell surface from the live theme tokens — header/footer
+  read `var(--rqd-bg-secondary)`, the body reads `var(--rqd-bg)`, hairlines
+  read `var(--rqd-border)`, and the brand accent comes from
+  `var(--rqd-primary)` so workspace-coloured widgets see THEIR accent
+  instead of Reqdesk cedar. The widget now also exposes the full Ledger
+  token set (`--rqd-ink`, `--rqd-paper`, `--rqd-bone`, `--rqd-cedar`,
+  `--rqd-hair`, `--rqd-text-muted`, font + tracking tokens) inside the
+  shadow root so every sdk-react primitive (`LedgerSegmented`,
+  `LedgerButton`, `LedgerInput`, …) inherits dark mode automatically.
+- **Footer link target.** "Powered by Reqdesk" now links to
+  `https://reqdesk.support` (was `reqdesk.com`) and is fronted by the
+  inline three-bar `BrandMark` glyph used across the SignInScreen,
+  HomeShell, and ledger eyebrows.
+- **Preferences panel rebuilt.** Each row is a numbered Ledger entry
+  (`01 / 02 / 03 …` mono index + Instrument Serif italic label) with a
+  hairline border + 2 px cedar gutter. The accent-colour swatches use a
+  2 px theme-coloured ring; the corner-position picker fills the active
+  tile with `var(--rqd-bg-secondary)` and a primary-coloured edge dot.
+
+## [1.5.0] - 2026-04-26
+
+### Changed
+
+- **`script_url_default` bumped to widget 1.5.0.** The 1.5 widget line collapses
+  the four widget-local view duplicates (`SubmitTicketView`, `MyTicketsView`,
+  `TicketDetailView`, `TrackTicketView`) onto the canonical `@reqdesk/sdk-react`
+  implementations via an internal `ApiClient`/`StorageBackend` adapter — every
+  surface the embedded widget renders now matches the browser-extension popup
+  pixel-for-pixel. The `FloatingWidget` shell (header, footer, preferences
+  panel, FAB chrome) is rebuilt against the locked Reqdesk Ledger primitives:
+  Instrument Serif italic titles, mono `REQDESK · LEDGER` eyebrows, hairline
+  ink borders, no shadows. The IIFE bundle moves from ~118 kB gzip → ~128 kB
+  gzip (+10 kB) for the consolidated views; consumers pay it once per
+  immutable version pin. New form features inherited from sdk-react: copyable
+  ticket-number pill on the list and detail header, image-thumbnail previews
+  on every previewable attachment, multi-select tag picker with inline tag
+  creation, per-field 422 error breakdown, redesigned success "entry logged"
+  card. No host-side code changes required.
+
 ## [1.4.0] - 2026-04-26
 
 ### Changed
