@@ -19,6 +19,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.6.0] - 2026-05-02
+
+### Added
+
+- **Default-view honouring on widget open.** When the project admin sets a
+  default saved view via Reqdesk's widget settings (Project → Widget →
+  Default View), the embedded widget now opens its tickets list with that
+  view's persisted filters applied. The widget calls
+  `GET /api/v1/projects/{id}/views/by-slug/{slug}` to resolve the saved
+  view at boot, then applies its `status` / `priority` / `search` filters
+  to the rendered list. When no default view is configured, behaviour is
+  unchanged from 1.5.x — the widget shows every ticket the user has access
+  to.
+
+### Changed
+
+- **`script_url_default` bumped to widget 1.7.0** to ship the
+  default-view honouring described above. Filament hosts that override
+  `REQDESK_SCRIPT_URL` keep their pin; everyone else picks up the new
+  default on the next deploy.
+
 ## [1.5.1] - 2026-04-27
 
 ### Fixed
